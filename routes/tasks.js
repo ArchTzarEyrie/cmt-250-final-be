@@ -59,7 +59,7 @@ router.post('/create', function(req, res, next) {
 });
 
 router.delete('/delete/:taskId', function(req, res, next) {
-    const idToDelete = req.params.taskId;
+    const idToDelete = Number.parseInt(req.params.taskId);
     const index = tasks.findIndex(task => task.id === idToDelete);
     tasks.splice(index, 1);
     try {
