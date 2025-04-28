@@ -8,6 +8,19 @@ router.get('/', function(req, res, next) {
     res.send({tasks});
 });
 
+const writeTasks = () => {
+    fs.writeFile(
+        `${__dirname}/../database.json`,
+        JSON.stringify(tasks),
+        'utf8',
+        (err) => {
+            if (err) {
+                console.log(err);
+            }
+        }
+    );
+}
+
 router.post('/update/:taskId', function(req, res, next) {
     const updatedTask = req.body;
     const compareId = Number.parseInt(req.params.taskId);
@@ -15,17 +28,8 @@ router.post('/update/:taskId', function(req, res, next) {
         const taskIndex = tasks.findIndex(task => task.id === compareId);
         tasks[taskIndex] = updatedTask;
         try {
-            fs.writeFile(
-                `${__dirname}/../database.json`,
-                JSON.stringify(tasks),
-                'utf8',
-                (err) => {
-                    if (err) {
-                        console.log(err);
-                    }
-                    res.sendStatus(200);
-                }
-            );
+            writeTasks();
+            res.sendStatus(200);
         } catch (err) {
             console.log(err);
         }
@@ -33,6 +37,36 @@ router.post('/update/:taskId', function(req, res, next) {
     } else {
         console.log('Throwing error');
         res.sendStatus(500);
+    }
+});
+
+router.post('/create', function(req, res, next) {
+    const newTask = req.body;
+    tasks.sort((a, b) => {
+        return b.id - a.id
+    });
+    const newId = tasks[0].id + 1;
+    tasks.push({
+        ...newTask,
+        id: newId
+    });
+    try {
+        writeTasks();
+        res.sendStatus(200);
+    } catch (err) {
+        console.log(err);
+    }
+});
+
+router.delete('/delete/:taskId', function(req, res, next) {
+    const idToDelete = req.params.taskId;
+    const index = tasks.findIndex(task => task.id === idToDelete);
+    tasks.splice(index, 1);
+    try {
+        writeTasks();
+        res.sendStatus(200);
+    } catch (err) {
+        console.log(err);
     }
 })
 
