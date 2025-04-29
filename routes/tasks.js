@@ -45,16 +45,18 @@ router.post('/create', function(req, res, next) {
     tasks.sort((a, b) => {
         return b.id - a.id
     });
-    const newId = tasks[0].id + 1;
-    tasks.push({
+    const newId = tasks.length > 0 ? tasks[0].id + 1 : 1;
+    const newTaskToAdd = {
         ...newTask,
         id: newId
-    });
+    };
+    tasks.push(newTaskToAdd);
     try {
         writeTasks();
-        res.sendStatus(200);
+        res.send(newTaskToAdd);
     } catch (err) {
         console.log(err);
+        res.sendStatus(500);
     }
 });
 
