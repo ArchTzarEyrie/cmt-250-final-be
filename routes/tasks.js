@@ -41,19 +41,11 @@ router.post('/update/:taskId', function(req, res, next) {
 });
 
 router.post('/create', function(req, res, next) {
-    const newTask = req.body;
-    tasks.sort((a, b) => {
-        return b.id - a.id
-    });
-    const newId = tasks.length > 0 ? tasks[0].id + 1 : 1;
-    const newTaskToAdd = {
-        ...newTask,
-        id: newId
-    };
-    tasks.push(newTaskToAdd);
+    const newTask = req.body;;
+    tasks.push(newTask);
     try {
         writeTasks();
-        res.send(newTaskToAdd);
+        res.sendStatus(200);
     } catch (err) {
         console.log(err);
         res.sendStatus(500);
